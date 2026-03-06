@@ -11,7 +11,7 @@
 A hybrid C/Python tool for high-performance TCP SYN Flooding attacks within Kathara network environments.
 
 ## Preface
-This project was developed for a university challenge to explore a hybrid approach, leveraging the simplicity of Python (Scapy) for TCP SYN packet crafting and the low-level efficiency of C for high-speed raw socket injection. As an educational prototype focused on the speed of the transmission loop, this software is not intended to be a fully optimized production tool.
+This project was developed for a university challenge to explore a hybrid approach, leveraging the simplicity of Python (Scapy) for TCP SYN packet crafting and the low-level efficiency of C for high-speed raw socket injection. As an educational prototype focused on the speed of the transmission loop, this software is not intended to be a fully optimized production tool.(Example : I opted to extract the target IP and port directly from a file.bin rather than a standard config.ini. This approach was chosen to gain a deeper understanding of packet structure; specifically, it allowed me to practice navigating the TCP/IP stack manually by calculating offsets using fields such as IHL (Internet Header Length) and Total Length)
 
 ## Overview
 This project demonstrates a multi-stage approach to network stress testing:
@@ -157,6 +157,7 @@ tcpdump -i any "tcp[tcpflags] & tcp-syn != 0"
 Execute the binary from the attacker node (PC1). The C engine will start sending raw SYN packets at the maximum possible rate, bypasssing the standard TCP stack to optimize performance.
 
 ```bash
+cd bin #Go to the executable file folder
 ./synfld DEST_IP DEST_PORT
 ```
 
