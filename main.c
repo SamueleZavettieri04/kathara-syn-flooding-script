@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <ctype.h>
+#include <string.h>
 #include "lib/main_lib.h"
 #include "lib/flood_core.h"
 #include "lib/error_handler.h"
@@ -28,7 +29,8 @@ int main(int argc,char* argv[]){
     switch(argc){ // Handle command-line arguments based on the number of arguments provided. The script expects a maximum of 3 arguments (the program name, destination IP, and destination port). 
                     // Depending on the number of arguments, the script will either use default values or validate the provided input and update the configuration accordingly.
         case 1:
-            fprintf(stdout,"\033[33m \n\t Warning : No arguments. \n\t Default arguments: \n\t\t -dest_ip: 0.0.0.0 \n\t\t -dest_port: 80\033[0m\n\n Do you wish to continue? [Y]=yes [N]=no [I]=more infos\n\nc: ");
+        
+            fprintf(stdout,"\033[33m \n\t Warning : No arguments. \n\t Default arguments: \n\t\t -dest_ip: 0.0.0.0 \n\t\t -dest_port: 80\033[0m\n\n Do you wish to continue? [Y]=yes [N]=no \n\nc: ");
             scanf("%c",&s);
 
             if(s == 'N' || s=='n'){
@@ -39,12 +41,18 @@ int main(int argc,char* argv[]){
             }  
             break;
         case 2:
-            if(!check_ip_octet(argv[1])){ // Validate the provided IP address using the check_ip_octet function. If the IP address is valid, update the configuration with the provided IP and use the default port (80). If the IP address is invalid, print an error message and return an error code.
+            if(strcmp(argv[1],"-h") == 0 || strcmp(argv[1],"--help") == 0){ // If the user provides the -h or --help argument, display usage information and exit. If no arguments are provided, prompt the user to confirm whether they want to proceed with default values.   
+                fprintf(stdout,"\033[38;5;208m \n\t SYN Flood Attack Script \n\n\t Usage: synfld [dest_ip] [dest_port] \n\n\t Arguments: \n\t\t -dest_ip: The target IP address for the SYN Flood attack (default: 0.0.0.0) \n\t\t -dest_port: The target port for the SYN Flood attack (default: 80) \033[0m\n");
+                return 0;
+            }else{
+                if(!check_ip_octet(argv[1])){ // Validate the provided IP address using the check_ip_octet function. If the IP address is valid, update the configuration with the provided IP and use the default port (80). If the IP address is invalid, print an error message and return an error code.
+            
                     fprintf(stdout,"\033[32m \n\t Info : Only IP Specified [value= %s] \n\t Default argument: -dest_port: 80\033[0m\n",argv[1]);
                     update_ini_key("../config/config.ini","dest_ip",argv[1]);
-            }else{
-                    fprintf(stderr,"\033[31m \n\t Error [0x%d] : Wrong IP format.\n\t Try a valid format like x.x.x.x (max 255 for octect) [your value]= %s\033[0m\n",ERR_WRONG_IP_FORMAT,argv[1]);
-                    return -1;
+                }else{
+                        fprintf(stderr,"\033[31m \n\t Error [0x%d] : Wrong IP format.\n\t Try a valid format like x.x.x.x (max 255 for octect) [your value]= %s\033[0m\n",ERR_WRONG_IP_FORMAT,argv[1]);
+                        return -1;
+                }
             }
             break;
         case 3:
@@ -66,7 +74,7 @@ int main(int argc,char* argv[]){
             }
             break;
         default:
-            fprintf(stderr,"\033[31m \n\t Error [0x%d] : Too many arguments. Expected max 3 arguments \n\n \t Type synfld -h for more infos\033[0m\n",ERR_TOO_MANY_ARGS);
+            fprintf(stderr,"\033[31m \n\t Error [0x%d] : Too many arguments. Expected max 3 arguments \n\n \t Type synfld -h/--help for more infos\033[0m\n",ERR_TOO_MANY_ARGS);
             return -1;
     }
 
